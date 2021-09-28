@@ -1,0 +1,45 @@
+Blackjack Pseudocode
+====================
+
+***Hardware***
+R1: robot with arm and eraser (for drawing cards from deck)
+R2: robot with ramp (for pushing cards toward brick wall)
+R3: robot with push arm (for flipping cards)
+R4: robot with expo eraser (for "dealing" cards to appropriate players)
+
+***Steps***
+DrawCard()
+	R1 drive forward toward deck, pushing eraser up onto top card
+	R1 drive backward, pulling 1 card with it via eraser
+	Card is released from R1 via passive legos (or 3D printed part) 
+	Draw card with R1
+	Move card with R3 up to brick wall
+	Push the card over with R3
+	Return R3 to original position
+	Return R2 to original position
+	Get card value from camera
+
+
+Main()
+DrawCard()
+
+In order of play DrawCard() before each play. Use robot 4 to push card to indicated side.
+Add cards value to total for the correct user. Use camera image to get player hit or stand.
+
+Order of play:
+Player
+Dealer
+Player
+If player has Black jack, Skip to dealer
+Get player action from camera
+Loop Until Stand or total > 21: 
+	Player
+	Get action from camera
+	
+If bust: dealer win STOP
+Else: continue
+Dealer
+Until dealerTotal >= 17 or bust: dealer
+If dealer bust: player Win STOP
+Else: continue
+Compare totals for winner
