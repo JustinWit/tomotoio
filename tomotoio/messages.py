@@ -58,7 +58,19 @@ def _motorDirection(value: int) -> int:
 
 def encodeMotor(left: int, right: int, duration: float = 0) -> bytes:
     d = min(int(duration * 100), 255)
+    print(bytes([2, 1, _motorDirection(left), abs(left), 2, _motorDirection(right), abs(right), d]))
+    print(bytes([2, 1, _motorDirection(left), abs(left), 2, _motorDirection(right), abs(right), d]).hex(' '))
     return bytes([2, 1, _motorDirection(left), abs(left), 2, _motorDirection(right), abs(right), d])
+
+
+def encodeLocation(targetX: int, targetY: int, targetA: int) -> bytes:
+    string = '03 00 05 02 50 00 00'
+    locationArray = [targetX, targetY, targetA]
+    for i in range(3):
+        string += " {:04x}".format(locationArray[i])
+    print(bytes.fromhex(string))
+    print(bytes.fromhex(string).hex(" "))
+    return bytes.fromhex(string)
 
 
 def encodeLight(r: int, g: int, b: int, duration: float = 0) -> bytes:

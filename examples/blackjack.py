@@ -14,10 +14,18 @@ def drawCard():
 	# flipBot filps card and pulls back
 	# moveBot pulls back
 
-	drawBot.setMotor(65, 65, 2.2)
+	for x in range(50):
+		drawBot.setMotor(x, x, 0)
+		sleep(0.1)
+	drawBot.setMotor(0, 0, 1)
 	sleep(3)
-	drawBot.setMotor(-45, -45, 2.2)
-	sleep(3)
+
+	for x in range(30):
+		drawBot.setMotor(-x, -x, 0)
+		sleep(0.1)
+	sleep(2)
+	drawBot.setMotor(0, 0, 1)
+	sleep(5)
 
 
 	moveBot.setMotor(-65, -65, 0)
