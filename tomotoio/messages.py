@@ -58,18 +58,23 @@ def _motorDirection(value: int) -> int:
 
 def encodeMotor(left: int, right: int, duration: float = 0) -> bytes:
     d = min(int(duration * 100), 255)
-    print(bytes([2, 1, _motorDirection(left), abs(left), 2, _motorDirection(right), abs(right), d]))
-    print(bytes([2, 1, _motorDirection(left), abs(left), 2, _motorDirection(right), abs(right), d]).hex(' '))
+    # print(bytes([2, 1, _motorDirection(left), abs(left), 2, _motorDirection(right), abs(right), d]))
+    # print(bytes([2, 1, _motorDirection(left), abs(left), 2, _motorDirection(right), abs(right), d]).hex(' '))
     return bytes([2, 1, _motorDirection(left), abs(left), 2, _motorDirection(right), abs(right), d])
 
 
 def encodeLocation(targetX: int, targetY: int, targetA: int) -> bytes:
-    string = '03 00 05 02 50 00 00'
+    # timeout 3rd: time in seconds
+    # movement type, 4th: 00 - move and rotate, 01 - not backwards, 02 - rotate after
+    # motor type 6th: 00 - constant, 01 - accelerate, 02 de accelerate, 03 accelerate then de accelerate
+    string = '03 00 30 02 50 03 00'
     locationArray = [targetX, targetY, targetA]
     for i in range(3):
-        string += " {:04x}".format(locationArray[i])
-    print(bytes.fromhex(string))
-    print(bytes.fromhex(string).hex(" "))
+        byte4 = "{:04x}".format(locationArray[i])
+        string += " " + byte4[2:] + " " + byte4[:2]
+    # print(string)
+    # print(bytes.fromhex(string))
+    # print(bytes.fromhex(string).hex(" "))
     return bytes.fromhex(string)
 
 

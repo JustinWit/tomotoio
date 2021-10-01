@@ -6,4 +6,5 @@ from utils import createCubes, createNavigators, releaseCubes
 
 cubes = createCubes()
 
-cubes[0].moveTo(400, 400, 0)
+cubes[0].moveTo(320, 80, 90)
+sleep(5)
