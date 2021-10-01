@@ -63,11 +63,12 @@ def encodeMotor(left: int, right: int, duration: float = 0) -> bytes:
     return bytes([2, 1, _motorDirection(left), abs(left), 2, _motorDirection(right), abs(right), d])
 
 
-def encodeLocation(targetX: int, targetY: int, targetA: int) -> bytes:
+def encodeLocation(targetX: int, targetY: int, targetA: int, motorType, maxSpeed) -> bytes:
     # timeout 3rd: time in seconds
     # movement type, 4th: 00 - move and rotate, 01 - not backwards, 02 - rotate after
+    # max wheel rotation speed 5th
     # motor type 6th: 00 - constant, 01 - accelerate, 02 de accelerate, 03 accelerate then de accelerate
-    string = '03 00 30 02 50 03 00'
+    string = '03 00 0a 00 ' + maxSpeed + ' ' + motorType + ' 00'
     locationArray = [targetX, targetY, targetA]
     for i in range(3):
         byte4 = "{:04x}".format(locationArray[i])
