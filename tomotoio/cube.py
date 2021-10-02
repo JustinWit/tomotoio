@@ -95,12 +95,12 @@ class Cube:
     def setMotor(self, left: float, right: float, duration: float = 0):
         self._write(UUIDs.MOTOR, encodeMotor(int(left), int(right), duration))
 
-    def moveTo(self, location, motorType = "03", maxSpeed = 80):
+    def moveTo(self, location, motorType = "03", maxSpeed = 80, movementType = "00"):
         targetX = location[0]
         targetY = location[1]
         targetA = location[2]
         hexSpeed = "{:02x}".format(maxSpeed)
-        self._write(UUIDs.MOTOR, encodeLocation(int(targetX), int(targetY), int(targetA), motorType, hexSpeed))
+        self._write(UUIDs.MOTOR, encodeLocation(int(targetX), int(targetY), int(targetA), motorType, hexSpeed, movementType))
 
     def setLight(self, r: int, g: int, b: int, duration: float = 0):
         self._write(UUIDs.LIGHT, encodeLight(r, g, b, duration))

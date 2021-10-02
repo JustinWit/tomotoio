@@ -10,8 +10,8 @@ cubes = createCubes()
 
 #hard code robots start and task location
 
-drawBotStart = [393, 333, 180]
-drawBotTask = [150, 333, 180]
+drawBotStart = [393, 328, 180]
+drawBotTask = [175, 328, 180]
 
 moveBotStart = [263, 420, 90]
 moveBotTask = [263, 145, 90]
@@ -32,14 +32,12 @@ sleep(2)
 flipBot.moveTo(flipBotStart)
 sleep(2)
 
-dealBot.moveTo(dealBotPlayer)
+dealBot.moveTo(dealBotDealer)
 sleep(2)
 
-# movements for dealing card
-
-#drawBot Movement
-for i in range(2):
-	drawBot.moveTo(drawBotTask)
+# movements for dealing card, initial deal of 3 cards, 2 to player one to dealer
+for i in range(3):
+	drawBot.moveTo(drawBotTask, "03", 80, "02")
 	sleep(3)
 	drawBot.moveTo(drawBotStart, "01", 40)
 	sleep(5)
@@ -56,10 +54,69 @@ for i in range(2):
 	moveBot.moveTo(moveBotStart)
 	sleep(4)
 
-	#dealCard to dealer
+	#dealCard every other
+	dealBot.moveTo(dealBotPlayer if (i%2 == 0) else dealBotDealer)
+
+print("Hit or Stand? (H/S)")
+response = input()
+
+while response.upper() != "S":
+	# dealBot to dealer side
 	dealBot.moveTo(dealBotDealer)
+
+	drawBot.moveTo(drawBotTask, "03", 80, "02")
+	sleep(3)
+	drawBot.moveTo(drawBotStart, "01", 40)
+	sleep(5)
+
+	#moveBot and flipBot Movement
+	moveBot.moveTo(moveBotTask)
+	sleep(4)
+
+	flipBot.moveTo(flipBotTask)
 	sleep(2)
+	flipBot.moveTo(flipBotStart)
+	sleep(2)
+
+	moveBot.moveTo(moveBotStart)
+	sleep(4)
+
 	dealBot.moveTo(dealBotPlayer)
 	sleep(2)
+
+	print("Hit or Stand? (H/S)")
+	response = input()
+
+response = ""
+
+while response.upper() != "S":
+	# dealBot to player side
+	dealBot.moveTo(dealBotPlayer)
+
+	drawBot.moveTo(drawBotTask, "03", 80, "02")
+	sleep(3)
+	drawBot.moveTo(drawBotStart, "01", 40)
+	sleep(5)
+
+	#moveBot and flipBot Movement
+	moveBot.moveTo(moveBotTask)
+	sleep(4)
+
+	flipBot.moveTo(flipBotTask)
+	sleep(2)
+	flipBot.moveTo(flipBotStart)
+	sleep(2)
+
+	moveBot.moveTo(moveBotStart)
+	sleep(4)
+
+	dealBot.moveTo(dealBotDealer)
+	sleep(2)
+
+	print("Dealer, Hit or Stand? (H/S)")
+	response = input()
+
+
+
 
 releaseCubes(cubes)
