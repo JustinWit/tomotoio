@@ -17,7 +17,7 @@ moveBotStart = [263, 420, 90]
 moveBotTask = [263, 145, 90]
 
 flipBotStart = [166, 203, 0]
-flipBotTask = [203, 115, 270]
+flipBotTask = [210, 115, 270]
 
 dealBotPlayer = [354, 133, 180]
 dealBotDealer = [139, 140, 180]
