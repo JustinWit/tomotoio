@@ -5,35 +5,29 @@ from tomotoio.navigator import Mat
 from utils import createCubes, createNavigators, releaseCubes
 
 cubes = createCubes()
+robot = cubes[0]
 
+def MoveRobot(location):
+	finish = False
+	while(finish == False):
+		robot.moveTo(location)
 
-for x in range(50):
-	cubes[0].setMotor(x, x, 0)
-	sleep(0.1)
-cubes[0].setMotor(0, 0, 1)
-sleep(2)
-for x in range(30):
-	cubes[0].setMotor(-x, -x, 0)
-	sleep(0.1)
-sleep(2)
-cubes[0].setMotor(0, 0, 1)
+		while robot.getMotorStatus()[0] != 131:
+			pass
+		
+		exitCode = robot.getMotorStatus()[2]
+		print(exitCode)
 
-sleep(1)
+		if exitCode == 0:
+			finish = True
 
-for x in range(50):
-	cubes[1].setMotor(-x, -x, 0)
-	sleep(0.05)
-sleep(1.8)
-cubes[1].setMotor(0, 0, 1)
-sleep(3)
-for x in range(50):
-	cubes[1].setMotor(x, x, 0)
-	sleep(0.1)
-sleep(.2)
-cubes[1].setMotor(0, 0, 1)
-sleep(5)
+		elif exitCode == 2:
+			robot.setMotor(-20, -20, 1)
+			sleep(1)
+		else:
+			print(exitCode)
+			break
 
-
-	
+MoveRobot([250, 250, 90])
 
 releaseCubes(cubes)

@@ -22,21 +22,39 @@ flipBotTask = [210, 115, 270]
 dealBotPlayer = [354, 133, 180]
 dealBotDealer = [139, 140, 180]
 
+# methods for moving each robot and handling errors
+def MoveDrawBot(location):
+	finish = False
+	while(finish == False):
+		drawBot.moveTo(location)
+
+		while(len(drawBot.getMotorStatus()) != 3):
+			pass
+
+		exitCode = drawBot.getMotorStatus()[2]
+
+		if exitCode == 0:
+			finish = True
+
+		elif exitCode == 2:
+			drawBot.setMotor(-20, -20, 1)
+			sleep(1)
+		else:
+			print("Error: ", exitCode)
+			break
+
 # initialize all robots to starting posistions on board
 drawBot.moveTo(drawBotStart)
-sleep(2)
 
 moveBot.moveTo(moveBotStart)
-sleep(2)
 
 flipBot.moveTo(flipBotStart)
-sleep(2)
 
 dealBot.moveTo(dealBotDealer)
 sleep(2)
 
 # movements for dealing card, initial deal of 3 cards, 2 to player one to dealer
-for i in range(3):
+for i in range(51):
 	drawBot.moveTo(drawBotTask, "03", 80, "02")
 	sleep(3)
 	drawBot.moveTo(drawBotStart, "01", 40)

@@ -101,6 +101,19 @@ class Cube:
         targetA = location[2]
         hexSpeed = "{:02x}".format(maxSpeed)
         self._write(UUIDs.MOTOR, encodeLocation(int(targetX), int(targetY), int(targetA), motorType, hexSpeed, movementType))
+        
+    def getMotorStatus(self):
+        return self._read(UUIDs.MOTOR)
+
+    def enableMotorSpeed(self):
+        # 1c 00 01
+        data = bytes.fromhex("1c 00 01")
+        self._write(UUIDs.CONFIG, data)
+
+    def disableMotorSpeed(self):
+        # 1c 00 00
+        data = bytes.fromhex("1c 00 00")
+        self._write(UUIDs.CONFIG, data)
 
     def setLight(self, r: int, g: int, b: int, duration: float = 0):
         self._write(UUIDs.LIGHT, encodeLight(r, g, b, duration))
