@@ -1,0 +1,20 @@
+errors.txt
+List of most likely errors for each robot (for designing and debugging code).
+
+DRAW
+*
+
+
+PUSH
+*card gets stuck on middle lip of board
+    SOLUTION: back up and try again
+
+FLIP
+*card is not contacted by the robot, so it doesn't flip
+    SOLUTION: hmm, we probably need feedback from the camera to determine when this happens
+    - perhaps we adjust the position that the robot drives to?
+
+DEAL
+*card gets stuck under robot, causing robot to drive over it and stop
+    SOLUTION: back up and try again
+
