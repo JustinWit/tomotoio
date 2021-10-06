@@ -102,6 +102,25 @@ class Cube:
         hexSpeed = "{:02x}".format(maxSpeed)
         self._write(UUIDs.MOTOR, encodeLocation(int(targetX), int(targetY), int(targetA), motorType, hexSpeed, movementType))
         
+        #------------------- code to handle error ----------------------#
+        # finish = False
+        # while(finish == False):
+        #     self._write(UUIDs.MOTOR, encodeLocation(int(targetX), int(targetY), int(targetA), motorType, hexSpeed, movementType))
+        #     while(len(self.getMotorStatus()) != 3):
+        #         pass
+
+        #     exitCode = self.getMotorStatus()[2]
+        #     print(exitCode)
+        #     if exitCode == 0:
+        #         finish = True
+
+        #     elif exitCode == 2:
+        #         self.setMotor(-20, -20, 1)
+        #         sleep(1)
+        #     else:
+        #         print("Error: ", exitCode)
+        #         break
+        
     def getMotorStatus(self):
         return self._read(UUIDs.MOTOR)
 

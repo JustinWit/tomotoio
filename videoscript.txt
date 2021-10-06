@@ -3,6 +3,9 @@
 -->title slide with project, names, FSC logo, UIST logo)
 (fade out)
 
-(voiceover): Blackjack is ...
-
-
+(voiceover): Blackjack is a classic casino card game between a dealer and one or more players, 
+with the goal being to have cards that totals as close to 21 as possible. Players are initially 
+dealt 2 cards and must decide whether to hit meaning draw a card or stand. The dealer then has the same options.
+To replace a dealer with robots, there are 4 main tasks, drawing a card, fliping the card, dealing 
+the card, and reacting to the players choice to hit or stand. Our project uses Toio robots to accomplish
+these tasks and play a game of blackjack.

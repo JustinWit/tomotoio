@@ -13,6 +13,7 @@ def MoveRobot(location):
 		robot.moveTo(location)
 
 		while robot.getMotorStatus()[0] != 131:
+			print(robot.getMotorStatus())
 			pass
 		
 		exitCode = robot.getMotorStatus()[2]
