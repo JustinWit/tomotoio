@@ -154,3 +154,10 @@ class Cube:
 
     def setConfigDoubleTapTiming(self, value: int):
         self._write(UUIDs.CONFIG, encodeConfigDoubleTapTiming(value))
+
+    def motionReset(self):
+        data = bytes.fromhex("81")
+        return(self._write(UUIDs.MOTION, data))
+
+    def getMotion(self):
+        return self._read(UUIDs.MOTION)
