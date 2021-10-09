@@ -161,3 +161,8 @@ class Cube:
 
     def getMotion(self):
         return self._read(UUIDs.MOTION)
+
+    def configHorizontal(self, theta:int):
+        thetaHex = "{:02x}".format(theta)
+        data = bytes.fromhex("05 00 " + thetaHex)
+        self._write(UUIDs.CONFIG, data)

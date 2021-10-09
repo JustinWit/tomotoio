@@ -22,6 +22,9 @@ flipBotTask = [210, 115, 270]
 dealBotPlayer = [354, 133, 180]
 dealBotDealer = [139, 140, 360]
 
+# initail configuration for cubes
+dealBot.configHorizontal(10)
+
 # methods for moving each robot and handling errors
 
 # motorType: 00 - constant, 01 - accelerate, 02 de accelerate, 03 accelerate then de accelerate
@@ -116,6 +119,7 @@ def Move_DealBot(location, motorType: str = "03", maxSpeed: int = 80, movementTy
 			print("Error: ", exitCode)
 			break
 
+
 # initialize all robots to starting posistions on board
 Move_DrawBot(drawBotStart)
 
@@ -131,7 +135,7 @@ for i in range(3):
 	Move_DrawBot(drawBotStart, "00", 40, "00")
 
 	#moveBot and flipBot Movement
-	Move_MoveBot(moveBotTask, "03", 70)
+	Move_MoveBot(moveBotTask, "03", 100)
 
 	Move_FlipBot(flipBotTask)
 
@@ -142,42 +146,47 @@ for i in range(3):
 	#dealCard every other
 	Move_DealBot(dealBotPlayer if (i%2 == 0) else dealBotDealer, "03", 80, "02")
 
-print("Hit or Stand? (double tap robot to hit)")
-sleep(3)
-response = dealBot.getMotion()[3]
-dealBot.motionReset()
+print("Hit or Stand? (double tap robot to hit) (tilt robot to stand)")
+while True:
 
-while response != 0:
-	# dealBot to dealer side
-	Move_DealBot(dealBotDealer)
+	# if cube is tilted(stand) break the loop
+	# 1 is horezontal, 3 is double tap
+	dealBot.resetMotion()
+	response = dealBot.getMotion()
 
-	Move_DrawBot(drawBotTask, "01", 100, "00")
+	if response[3] == 1:
+		dealBot.setSoundEffect(1)
+		# dealBot to dealer side
+		Move_DealBot(dealBotDealer)
 
-	Move_DrawBot(drawBotStart, "00", 40, "00")
+		Move_DrawBot(drawBotTask, "01", 100, "00")
 
-
-	#moveBot and flipBot Movement
-	Move_MoveBot(moveBotTask, "03", 70)
-
-	Move_FlipBot(flipBotTask)
-
-	Move_FlipBot(flipBotStart)
+		Move_DrawBot(drawBotStart, "00", 40, "00")
 
 
-	Move_MoveBot(moveBotStart)
+		#moveBot and flipBot Movement
+		Move_MoveBot(moveBotTask, "03", 100)
+
+		Move_FlipBot(flipBotTask)
+
+		Move_FlipBot(flipBotStart)
 
 
-	Move_DealBot(dealBotPlayer)
+		Move_MoveBot(moveBotStart)
 
 
-	print("Hit or Stand? (double tap to hit)")
-	sleep(3)
-	response = dealBot.getMotion()[3]
-	dealBot.motionReset()
+		Move_DealBot(dealBotPlayer)
 
-response = 1
+		print("Hit or Stand? (double tap robot to hit) (tilt robot to stand)")
 
-while response != 0:
+	elif response[1] == 0:
+		dealBot.setSoundEffect(2)
+		sleep(.5)
+		break
+
+
+dealerTotal = 0
+while dealerTotal < 17:
 	# dealBot to player side
 	Move_DealBot(dealBotPlayer)
 
@@ -187,7 +196,7 @@ while response != 0:
 
 
 	#moveBot and flipBot Movement
-	Move_MoveBot(moveBotTask, "03", 70)
+	Move_MoveBot(moveBotTask, "03", 100)
 
 
 	Move_FlipBot(flipBotTask)
@@ -198,12 +207,7 @@ while response != 0:
 
 
 	Move_DealBot(dealBotDealer)
-
-
-	print("Hit or Stand? (double tap to hit)")
-	sleep(3)
-	response = dealBot.getMotion()[3]
-	dealBot.motionReset()
+	dealerTotal += int(input("Dealers card: "))
 
 
 
