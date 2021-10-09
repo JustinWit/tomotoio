@@ -47,6 +47,11 @@ def Move_DrawBot(location, motorType: str = "03", maxSpeed: int = 80, movementTy
 			drawBot.setMotor(150, 150, 1)
 			sleep(1)
 			break
+
+		elif exitCode == 2:
+			drawBot.setMotor(-20, -20, .5)
+			sleep(.5)
+			break
 		else:
 			print("Error: ", exitCode)
 			break
@@ -121,9 +126,9 @@ Move_FlipBot(flipBotStart)
 Move_DealBot(dealBotDealer)
 
 # movements for dealing card, initial deal of 3 cards, 2 to player one to dealer
-for i in range(51):
-	Move_DrawBot(drawBotTask, "01", 100, "02")
-	Move_DrawBot(drawBotStart, "00", 40, "02")
+for i in range(3):
+	Move_DrawBot(drawBotTask, "01", 100, "00")
+	Move_DrawBot(drawBotStart, "00", 40, "00")
 
 	#moveBot and flipBot Movement
 	Move_MoveBot(moveBotTask, "03", 70)
@@ -137,20 +142,22 @@ for i in range(51):
 	#dealCard every other
 	Move_DealBot(dealBotPlayer if (i%2 == 0) else dealBotDealer, "03", 80, "02")
 
-print("Hit or Stand? (H/S)")
-response = input()
+print("Hit or Stand? (double tap robot to hit)")
+sleep(3)
+response = dealBot.getMotion()[3]
+dealBot.motionReset()
 
-while response.upper() != "S":
+while response != 0:
 	# dealBot to dealer side
 	Move_DealBot(dealBotDealer)
 
-	Move_DrawBot(drawBotTask, "03", 80, "02")
+	Move_DrawBot(drawBotTask, "01", 100, "00")
 
-	Move_DrawBot(drawBotStart, "01", 40)
+	Move_DrawBot(drawBotStart, "00", 40, "00")
 
 
 	#moveBot and flipBot Movement
-	Move_MoveBot(moveBotTask)
+	Move_MoveBot(moveBotTask, "03", 70)
 
 	Move_FlipBot(flipBotTask)
 
@@ -163,22 +170,24 @@ while response.upper() != "S":
 	Move_DealBot(dealBotPlayer)
 
 
-	print("Hit or Stand? (H/S)")
-	response = input()
+	print("Hit or Stand? (double tap to hit)")
+	sleep(3)
+	response = dealBot.getMotion()[3]
+	dealBot.motionReset()
 
-response = ""
+response = 1
 
-while response.upper() != "S":
+while response != 0:
 	# dealBot to player side
 	Move_DealBot(dealBotPlayer)
 
-	Move_DrawBot(drawBotTask, "03", 80, "02")
+	Move_DrawBot(drawBotTask, "01", 100, "00")
 
-	Move_DrawBot(drawBotStart, "01", 40)
+	Move_DrawBot(drawBotStart, "00", 40, "00")
 
 
 	#moveBot and flipBot Movement
-	Move_MoveBot(moveBotTask)
+	Move_MoveBot(moveBotTask, "03", 70)
 
 
 	Move_FlipBot(flipBotTask)
@@ -191,8 +200,10 @@ while response.upper() != "S":
 	Move_DealBot(dealBotDealer)
 
 
-	print("Dealer, Hit or Stand? (H/S)")
-	response = input()
+	print("Hit or Stand? (double tap to hit)")
+	sleep(3)
+	response = dealBot.getMotion()[3]
+	dealBot.motionReset()
 
 
 
