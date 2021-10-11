@@ -6,48 +6,48 @@ from utils import createCubes, createNavigators, releaseCubes
 
 cubes = createCubes()
 
+drawBot = cubes[0]
 
-def moveSim(numCubes: int, cubeArr, cubesTarget):
-	for i in range(numCubes):
-		cubes[cubeArr[i]].moveTo(cubesTarget[i])
+drawBotStart = [379, 328, 182]
+drawBotMid = [308, 329, 180]
+drawBotTask = [205, 320, 180]
 
-	while True:
-		finish = True
+forward = [drawBotMid, drawBotTask]
+backward = [drawBotMid, drawBotStart]
 
-		for i in range(numCubes):
-			if(cubes[cubeArr[i]].getMotorStatus()[0] != 131):
-				finish = False
-			if(cubes[cubeArr[i]].getMotorStatus()[0] == 131 and cubes[cubeArr[i]].getMotorStatus()[2] != 0):
-				print("error cube", i)
-				cubes[cubeArr[i]].setMotor(-20, -20, 1)
-				sleep(1)
-				cubes[cubeArr[i]].moveTo(cubesTarget[i])
-				finish = False
+def Move_DrawBot(locations, motorType: str = "03", maxSpeed: int = 80, movementType: str = "00"):
+	finish = False
+	while(finish == False):
+		drawBot.moveToMulti(len(locations), locations, motorType, maxSpeed, movementType)
 
+		while(len(drawBot.getMotorStatus()) != 3):
+			pass
 
-		if finish == True:
+		exitCode = drawBot.getMotorStatus()[2]
+
+		if exitCode == 0:
+			finish = True
+
+		# did not reach high enough on card
+		elif exitCode == 1:
+			drawBot.setMotor(-20, -20, .2)
+			sleep(.2)
+			drawBot.setMotor(150, 150, 1)
+			sleep(1)
 			break
 
-target1 = [250, 250, 90]
-target2 = [350, 350, 90]
-target3 = [150, 250, 90]
-target4 = [350, 150, 90]
+		elif exitCode == 2:
+			drawBot.setMotor(-20, -20, .5)
+			sleep(.5)
+			break
+		else:
+			print("Error: ", exitCode)
+			break
 
-
-# send total number of cubes, array of cubes position in cubes array, array of target location for respective cube
-moveSim(4, [0, 1, 2, 3], [target1, target2, target3, target4])
-
-cube0Response = cubes[0].getMotorStatus()[2]
-cube1Response = cubes[1].getMotorStatus()[2]
-cube2Response = cubes[2].getMotorStatus()[2]
-cube3Response = cubes[3].getMotorStatus()[2]
-
-print("cube0", cube0Response)
-print("sube1", cube1Response)
-print("cube2", cube2Response)
-print("sube3", cube3Response)
-
-
+while True:
+	Move_DrawBot(forward, "01", 100, "00")
+	Move_DrawBot(backward, "00", 60, "00")
+	input()
 
 
 releaseCubes(cubes)

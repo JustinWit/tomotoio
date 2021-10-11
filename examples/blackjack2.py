@@ -10,8 +10,12 @@ cubes = createCubes()
 
 #hard code robots start and task location
 
-drawBotStart = [393, 328, 180]
-drawBotTask = [180, 328, 180]
+drawBotStart = [379, 328, 180]
+drawBotMid = [308, 329, 180]
+drawBotTask = [210, 328, 180]
+
+drawForward = [drawBotMid, drawBotTask]
+drawBackward = [drawBotMid, drawBotStart]
 
 moveBotStart = [263, 420, 90]
 moveBotTask = [263, 145, 90]
@@ -30,10 +34,10 @@ dealBot.configHorizontal(10)
 # motorType: 00 - constant, 01 - accelerate, 02 de accelerate, 03 accelerate then de accelerate
 # movementType: 00 - move and rotate, 01 - not backwards, 02 - rotate after
 
-def Move_DrawBot(location, motorType: str = "03", maxSpeed: int = 80, movementType: str = "00"):
+def Move_DrawBot(locations, motorType: str = "03", maxSpeed: int = 80, movementType: str = "00"):
 	finish = False
 	while(finish == False):
-		drawBot.moveTo(location, motorType, maxSpeed, movementType)
+		drawBot.moveToMulti(len(locations), locations, motorType, maxSpeed, movementType)
 
 		while(len(drawBot.getMotorStatus()) != 3):
 			pass
@@ -121,7 +125,7 @@ def Move_DealBot(location, motorType: str = "03", maxSpeed: int = 80, movementTy
 
 
 # initialize all robots to starting posistions on board
-Move_DrawBot(drawBotStart)
+drawBot.moveTo(drawBotStart)
 
 Move_MoveBot(moveBotStart)
 
@@ -131,8 +135,8 @@ Move_DealBot(dealBotDealer)
 
 # movements for dealing card, initial deal of 3 cards, 2 to player one to dealer
 for i in range(3):
-	Move_DrawBot(drawBotTask, "01", 100, "00")
-	Move_DrawBot(drawBotStart, "00", 40, "00")
+	Move_DrawBot(drawForward, "01", 100, "00")
+	Move_DrawBot(drawBackward, "00", 40, "00")
 
 	#moveBot and flipBot Movement
 	Move_MoveBot(moveBotTask, "03", 100)
@@ -151,7 +155,6 @@ while True:
 
 	# if cube is tilted(stand) break the loop
 	# 1 is horezontal, 3 is double tap
-	dealBot.resetMotion()
 	response = dealBot.getMotion()
 
 	if response[3] == 1:
@@ -159,9 +162,9 @@ while True:
 		# dealBot to dealer side
 		Move_DealBot(dealBotDealer)
 
-		Move_DrawBot(drawBotTask, "01", 100, "00")
+		Move_DrawBot(drawForward, "01", 100, "00")
 
-		Move_DrawBot(drawBotStart, "00", 40, "00")
+		Move_DrawBot(drawBackward, "00", 40, "00")
 
 
 		#moveBot and flipBot Movement
@@ -184,15 +187,16 @@ while True:
 		sleep(.5)
 		break
 
+dealBot.motionReset()
 
 dealerTotal = 0
 while dealerTotal < 17:
 	# dealBot to player side
 	Move_DealBot(dealBotPlayer)
 
-	Move_DrawBot(drawBotTask, "01", 100, "00")
+	Move_DrawBot(drawForward, "01", 100, "00")
 
-	Move_DrawBot(drawBotStart, "00", 40, "00")
+	Move_DrawBot(drawBackward, "00", 40, "00")
 
 
 	#moveBot and flipBot Movement

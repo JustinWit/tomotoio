@@ -120,6 +120,10 @@ class Cube:
         #     else:
         #         print("Error: ", exitCode)
         #         break
+
+    def moveToMulti(self, numTargets, locations, motorType = "02", maxSpeed = 80, movementType = "00"):
+        hexSpeed = "{:02x}".format(maxSpeed)
+        self._write(UUIDs.MOTOR, encodeMultiLocation(numTargets, locations, motorType, hexSpeed, movementType))
         
     def getMotorStatus(self):
         return self._read(UUIDs.MOTOR)

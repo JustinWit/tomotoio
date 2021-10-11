@@ -10,8 +10,13 @@ cubes = createCubes()
 
 #hard code robots start and task location
 
-drawBotStart = [393, 328, 180]
-drawBotTask = [154, 328, 180]
+drawBotStart = [379, 328, 182]
+drawBotMid = [308, 329, 180]
+drawBotTask = [205, 320, 180]
+
+drawForward = [drawBotMid, drawBotTask]
+drawBackward = [drawBotMid, drawBotStart]
+
 
 moveBotStart = [263, 420, 90]
 moveBotTask = [263, 145, 90]
@@ -31,10 +36,10 @@ dealBot.configHorizontal(10)
 # motorType: 00 - constant, 01 - accelerate, 02 de accelerate, 03 accelerate then de accelerate
 # movementType: 00 - move and rotate, 01 - not backwards, 02 - rotate after
 
-def Move_DrawBot(location, motorType: str = "03", maxSpeed: int = 80, movementType: str = "00"):
+def Move_DrawBot(locations, motorType: str = "03", maxSpeed: int = 80, movementType: str = "00"):
 	finish = False
 	while(finish == False):
-		drawBot.moveTo(location, motorType, maxSpeed, movementType)
+		drawBot.moveToMulti(len(locations), locations, motorType, maxSpeed, movementType)
 
 		while(len(drawBot.getMotorStatus()) != 3):
 			pass
@@ -120,10 +125,10 @@ def Move_DealBot(location, motorType: str = "03", maxSpeed: int = 80, movementTy
 			print("Error: ", exitCode)
 			break
 
-
-def moveSim(numCubes: int, cubeArr, cubesTarget):
+def dealCard(numCubes: int, cubeArr, cubesTarget):
 	for i in range(numCubes):
 		cubes[cubeArr[i]].moveTo(cubesTarget[i])
+		sleep(.2)
 
 	while True:
 		finish = True
@@ -142,8 +147,37 @@ def moveSim(numCubes: int, cubeArr, cubesTarget):
 		if finish == True:
 			break
 
+def flipCard(cubeArr, cubesTarget):
+	cubes[cubeArr[0]].moveToMulti(2, cubesTarget[0], "01", 100, "00")
+	cubes[cubeArr[1]].moveToMulti(2, [cubesTarget[1], cubesTarget[2]])
+
+	while True:
+		finish = True
+
+		for i in range(2):
+			if(cubes[cubeArr[i]].getMotorStatus()[0] != 132):
+				finish = False
+			if(cubes[cubeArr[i]].getMotorStatus()[0] == 132 and cubes[cubeArr[i]].getMotorStatus()[2] != 0):
+				print("error cube", i)
+				cubes[cubeArr[i]].setMotor(-20, -20, 1)
+				sleep(1)
+				cubes[cubeArr[i]].moveToMulti(1, [cubesTarget[0][1]])
+				finish = False
+
+
+		if finish == True:
+			break
+
+
+
+
+
+####################################################################
+########                    Start of Game                   ########
+####################################################################
+
 # initialize all robots to starting posistions on board
-Move_DrawBot(drawBotStart)
+drawBot.moveTo(drawBotStart)
 
 Move_MoveBot(moveBotStart)
 
@@ -151,29 +185,183 @@ Move_FlipBot(flipBotStart)
 
 Move_DealBot(dealBotDealer)
 
-# movements for dealing card, initial deal of 3 cards, 2 to player one to dealer
-Move_DrawBot(drawBotTask, "01", 80, "00")
-for i in range(3):
+
+gamePlay = True
+
+# first draw
+Move_DrawBot(drawForward, "01", 100, "00")
+
+while gamePlay:
+	# initialize player and dealer totals
+	playerTotal = 0
+	dealerTotal = 0
+
+	# initialize bust to false and playerBlackJack to false
+	bust = False
+	blackjack = False
+
+	# initialize numAces for both dealer and player
+	numAcePlayer = 0
+	numAceDealer = 0
+
+	# movements for dealing card, initial deal of 3 cards, 2 to player one to dealer
+	
+	# move dealBot to correct position
+	dealBot.moveTo(dealBotDealer)
+	for i in range(3):
+
+		Move_DrawBot(drawBackward, "00", 60, "00")
+		Move_MoveBot(moveBotTask, "03", 100)
+
+		# here start simultanious move of flipBot and drawBot
+		flipCard([0, 2], [drawForward, flipBotTask, flipBotStart])
+
+		#########################################################################
+		###    Get card value here from camera and add to respective total    ###
+		cardValue = int(input("Enter Card Value: "))
+		if i%2 == 0:
+			playerTotal += cardValue
+			if cardValue == 11:
+				numAcePlayer += 1
+			if playerTotal > 21 and numAcePlayer > 0:
+				playerTotal -= 10
+				numAcePlayer -= 1
+			print(playerTotal)
+		else:
+			dealerTotal += cardValue
+			if cardValue == 11:
+				numAceDealer += 1
+			print(dealerTotal)
 
 
-	Move_DrawBot(drawBotStart, "00", 40, "00")
-	#moveBot and flipBot Movement
-	Move_MoveBot(moveBotClearDraw, "03", 100)
+		# start movebot return and deal at same time
+		dealCard(2, [1, 3], [moveBotStart, dealBotPlayer if (i%2 == 0) else dealBotDealer])
 
-	# here start simultanious movement of draw and move and flip
-	drawBot.moveTo(drawBotTask, "01", 80, "00")
-	moveBot.moveTo(moveBotTask)
-	flipBot.moveTo(flipBotTask)
 
-	sleep(3)
+	#########################################################################
+	###   if player total == 21, deal to dealer check values for winner   ###
+	if playerTotal == 21:
+		blackjack = True
 
-	flipBot.moveTo(flipBotStart)
-	sleep(.2)
-	moveBot.moveTo(moveBotClearDraw)
-	sleep(1)
+	# get player input from robot for hit and stand
+	else:
+		dealBot.setSoundEffect(0)
+		while True:
+			response = dealBot.getMotion()
 
-	#dealCard every other
-	dealBot.moveTo(dealBotPlayer if (i%2 == 0) else dealBotDealer, "03", 80, "02")
-	Move_MoveBot(moveBotStart)
+			# if tapped hit and recheck playerTotal
+			if response[3] == 1:
+				dealBot.motionReset()
+				dealBot.setSoundEffect(1)
+
+				dealBot.moveTo(dealBotDealer)
+				Move_DrawBot(drawBackward, "00", 60, "00")
+
+
+				Move_MoveBot(moveBotTask, "03", 100)
+
+				# here start simultanious move of flipBot and drawBot
+				flipCard([0, 2], [drawForward, flipBotTask, flipBotStart])
+
+				#########################################################################
+				###    Get card value here from camera and add to player total       ###
+				cardValue = int(input("Enter Card Value: "))
+				playerTotal += cardValue
+				if cardValue == 11:
+					numAcePlayer += 1
+				if playerTotal > 21 and numAcePlayer > 0:
+					playerTotal -= 10
+					numAcePlayer -= 1
+				print(playerTotal)
+
+
+				# start movebot return and deal at same time
+				dealCard(2, [1, 3], [moveBotStart, dealBotPlayer])
+
+				############################################################
+				###   if player total > 21, bust and end game            ###
+
+				if playerTotal > 21:
+					bust = True
+					break
+				dealBot.setSoundEffect(0)
+
+			# if tilted stand
+			elif response[1] == 0:
+				dealBot.motionReset()
+				dealBot.setSoundEffect(2)
+				sleep(1)
+				break
+
+	if bust == False:
+		while dealerTotal < 17:
+			dealBot.moveTo(dealBotPlayer)
+			Move_DrawBot(drawBackward, "00", 60, "00")
+
+
+			Move_MoveBot(moveBotTask, "03", 100)
+
+			# here start simultanious move of flipBot and drawBot
+			flipCard([0, 2], [drawForward, flipBotTask, flipBotStart])
+
+			#########################################################################
+			###    Get card value here from camera and add to dealer total        ###
+			###    if dealer busts, player win
+			cardValue = int(input("Enter Card Value: "))
+			dealerTotal += cardValue
+			if cardValue == 11:
+				numAceDealer += 1
+			if dealerTotal > 21 and numAceDealer > 0:
+				playerTotal -= 10
+				numAceDealer -= 1
+			print(dealerTotal)
+
+			if dealerTotal > 21:
+				print("Dealer Busts")
+			# start movebot return and deal at same time
+			dealCard(2, [1, 3], [moveBotStart, dealBotDealer])
+
+			if blackjack:
+				break
+	# player busted, dealer win, end game
+	else:
+		print("player busted")
+		playerTotal = 0
+
+	###################################################
+	### compare player and dealer totals for winner ###
+
+	if playerTotal > dealerTotal or dealerTotal > 21:
+		print("Player Wins")
+
+	elif dealerTotal > playerTotal:
+		print("Dealer Wins")
+
+	else:
+		print("It's a Tie")
+
+
+	###########################################################
+	### Get user input from a robot to quit or play again   ###
+	### hit to play again stand to quit                     ###
+	Move_DealBot(dealBotPlayer)
+	dealBot.setSoundEffect(0)
+	while True:
+		response = dealBot.getMotion()
+
+		if response[3] == 1:
+			# clear board with dealbot and reset game
+			dealBot.motionReset()
+			break
+		if response[1] == 0:
+			gamePlay = False
+			dealBot.setSoundEffect(5)
+			break
+
+
+
+
+
+	
 
 releaseCubes(cubes)

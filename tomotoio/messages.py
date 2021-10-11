@@ -78,6 +78,15 @@ def encodeLocation(targetX: int, targetY: int, targetA: int, motorType: str, max
     # print(bytes.fromhex(string).hex(" "))
     return bytes.fromhex(string)
 
+def encodeMultiLocation(numTargets: int, locations, motorType: str, maxSpeed: int, movementType: str):
+    data = "04 00 05 " + movementType + ' ' + maxSpeed + ' ' + motorType + ' 00 01'
+    for i in range(numTargets):
+        for j in range(3):
+            byte4 = "{:04x}".format(locations[i][j])
+            data += " " + byte4[2:] + " " + byte4[:2]
+    return bytes.fromhex(data)
+
+
 
 def encodeLight(r: int, g: int, b: int, duration: float = 0) -> bytes:
     return bytes([3, min(int(duration * 100), 255), 1, 1, r, g, b])
