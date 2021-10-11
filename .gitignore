@@ -1,6 +1,7 @@
 .vscode/
 *.bak
 toio-cubes.txt
+vision/data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
