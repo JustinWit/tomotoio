@@ -5,7 +5,7 @@ import cv2
 import os
 
 DATADIR = 'data'  # directory in which to save images
-PREFIX = 'allcards'  # prefix of image filenames
+PREFIX = 'cards'  # prefix of image filenames
 EXT = 'jpg'  # filename extension
 MIRROR = False  # mirror image or not?
 CAMERA = 'Logitech C920x'  # name of the camera (and subsequently, the cv2 window)
