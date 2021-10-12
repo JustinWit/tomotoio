@@ -50,7 +50,14 @@ def Move_DrawBot(locations, motorType: str = "03", maxSpeed: int = 80, movementT
 # 	Move_DrawBot([drawBotStart], "00", 60, "00")
 # 	input()
 
-drawBot.setSoundEffect(7)
+cubes[3].setConfigCollisionThreshold(4)
+cubes[3].setConfigLevelThreshold(10)
+
+while True:
+	cubes[3].motionReset()
+	sleep(5)
+	res = cubes[3].getMotion()
+	print(res)
 
 
 releaseCubes(cubes)

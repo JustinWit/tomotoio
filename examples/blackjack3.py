@@ -33,6 +33,7 @@ clearPlayer = [429, 135, 360]
 
 # initail configuration for cubes
 dealBot.configHorizontal(10)
+dealBot.setConfigCollisionThreshold(3)
 
 # methods for moving each robot and handling errors
 
@@ -55,9 +56,7 @@ def Move_DrawBot(locations, motorType: str = "03", maxSpeed: int = 80, movementT
 		# did not reach high enough on card
 		elif exitCode == 1:
 			drawBot.setMotor(-20, -20, .2)
-			sleep(.2)
-			drawBot.setMotor(150, 150, 1)
-			sleep(1)
+			drawBot.moveToMulti(len(locations), locations, motorType, maxSpeed, movementType)
 			break
 
 		elif exitCode == 2:
@@ -129,9 +128,9 @@ def Move_DealBot(location, motorType: str = "03", maxSpeed: int = 80, movementTy
 			break
 
 def dealCard(numCubes: int, cubeArr, cubesTarget):
-	for i in range(numCubes):
-		cubes[cubeArr[i]].moveTo(cubesTarget[i])
-		sleep(1)
+	cubes[cubeArr[0]].moveTo(cubesTarget[0])
+	sleep(1)
+	cubes[cubeArr[1]].moveTo(cubesTarget[1])
 
 	while True:
 		finish = True
@@ -223,14 +222,23 @@ while gamePlay:
 		# here start simultanious move of flipBot and drawBot
 		flipCard([0, 2], [drawForward, flipBotTask, flipBotStart])
 
+		# moveBot backwards enough to take image of card
+		Move_MoveBot(moveBotDropCard)
+
+		#########################################################################
+		###    Get card value here from camera and add to respective total    ###
+		while True:
+			try:
+				cardValue = int(input("Enter Card Value: "))
+				break
+			except:
+				pass
+
 
 		# start movebot return and deal at same time
 		dealCard(2, [1, 3], [moveBotStart, dealBotPlayer if (i%2 == 0) else dealBotDealer])
 
-
-		#########################################################################
-		###    Get card value here from camera and add to respective total    ###
-		cardValue = int(input("Enter Card Value: "))
+		# if image takes time to process can add value here
 		if i%2 == 0:
 			playerTotal += cardValue
 			if cardValue == 11:
@@ -238,12 +246,13 @@ while gamePlay:
 			if playerTotal > 21 and numAcePlayer > 0:
 				playerTotal -= 10
 				numAcePlayer -= 1
-			print(playerTotal)
+			print("Player Total: ", playerTotal)
 		else:
 			dealerTotal += cardValue
 			if cardValue == 11:
 				numAceDealer += 1
-			print(dealerTotal)
+			print("Dealer Total: ", dealerTotal)
+		
 
 
 	#########################################################################
@@ -254,6 +263,7 @@ while gamePlay:
 	# get player input from robot for hit and stand
 	else:
 		dealBot.setSoundEffect(0)
+		dealBot.motionReset()
 		while True:
 			response = dealBot.getMotion()
 
@@ -278,7 +288,13 @@ while gamePlay:
 
 				#########################################################################
 				###    Get card value here from camera and add to player total       ###
-				cardValue = int(input("Enter Card Value: "))
+				while True:
+					try:
+						cardValue = int(input("Enter Card Value: "))
+						break
+					except:
+						pass
+
 				playerTotal += cardValue
 				if cardValue == 11:
 					numAcePlayer += 1
@@ -286,8 +302,8 @@ while gamePlay:
 					playerTotal -= 10
 					numAcePlayer -= 1
 
-					
-				print(playerTotal)
+
+				print("Player Total: ", playerTotal)
 
 
 				############################################################
@@ -323,7 +339,12 @@ while gamePlay:
 			#########################################################################
 			###    Get card value here from camera and add to dealer total        ###
 			###    if dealer busts, player win
-			cardValue = int(input("Enter Card Value: "))
+			while True:
+				try:
+					cardValue = int(input("Enter Card Value: "))
+					break
+				except:
+					pass
 			dealerTotal += cardValue
 			if cardValue == 11:
 				numAceDealer += 1

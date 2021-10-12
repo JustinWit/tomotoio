@@ -36,7 +36,7 @@ def runInitialReport(cubes: Iterable[Cube]):
     for i, c in enumerate(cubes):
         log.info("Cube %d: Battery=%d", i + 1, c.battery.get())
         c.setLightPattern([colors[i % len(colors)], Light(0, 0, 0, offDuration)], repeat)
-        c.setMusic([Note(80, 0.1), Note(Note.REST, 0.05)], i + 1)
+        #c.setMusic([Note(80, 0.1), Note(Note.REST, 0.05)], i + 1)
         sleep(1)
 
 
