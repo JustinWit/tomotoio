@@ -9,9 +9,9 @@ from utils import createCubes, createNavigators, releaseCubes
 
 CAMERA = 'Logitech C920x'  # name of the camera (and subsequently, the cv2 window)
 MIRROR = False  # mirror image or not?
-CLASSFILE = 'card.names'  # file containing class names
-MODELCONFIG = 'yolov3_cards.cfg'
-MODELWEIGHTS = 'yolov3_cards_2900.weights'
+CLASSFILE = 'vision/card.names'  # file containing class names
+MODELCONFIG = 'vision/yolov3_cards.cfg'
+MODELWEIGHTS = 'vision/yolov3_cards_2900.weights'
 MODELSIZE = 416  # width and height of the model input, in pixels
 THOLD = 0.3  # confidence threshold
 NMS = 0.5  # threshold for non-maxima suppression
@@ -273,20 +273,20 @@ while gamePlay:
 
 		#########################################################################
 		###    Get card value here from camera and add to respective total    ###
-        cardValue = -1
-        while cardValue == -1:
-            if DETECT:
-                _, img = cam.read()
-                blob = cv2.dnn.blobFromImage(img, 1/255, (MODELSIZE, MODELSIZE), [0, 0, 0], 1, crop=True)
-                net.setInput(blob)
-                outputs = net.forward(outputlayers)
-                cardValue = mostlikelycard(outputs, labels)
-            else:
-                try:
-                    cardValue = int(input("Enter Card Value: "))
-                    break
-                except:
-                    pass
+		cardValue = -1
+		while cardValue == -1:
+			if DETECT:
+				_, img = cam.read()
+				blob = cv2.dnn.blobFromImage(img, 1/255, (MODELSIZE, MODELSIZE), [0, 0, 0], 1, crop=True)
+				net.setInput(blob)
+				outputs = net.forward(outputlayers)
+				cardValue = mostlikelycard(outputs, labels)
+			else:
+				try:
+					cardValue = int(input("Enter Card Value: "))
+					break
+				except:
+					pass
 
 		# start movebot return and deal at same time
 		dealCard(2, [1, 3], [moveBotStart, dealBotPlayer if (i%2 == 0) else dealBotDealer])
