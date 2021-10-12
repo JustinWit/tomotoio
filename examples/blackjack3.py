@@ -10,23 +10,26 @@ cubes = createCubes()
 
 #hard code robots start and task location
 
-drawBotStart = [379, 328, 182]
+drawBotStart = [379, 333, 180]
 drawBotMid = [308, 329, 180]
-drawBotTask = [205, 320, 180]
+drawBotTask = [205, 333, 180]
 
-drawForward = [drawBotMid, drawBotTask]
-drawBackward = [drawBotMid, drawBotStart]
+drawForward = [drawBotTask]
+drawBackward = [drawBotStart]
 
 
 moveBotStart = [263, 420, 90]
 moveBotTask = [263, 145, 90]
-moveBotClearDraw = [263, 193, 90]
+moveBotDropCard = [263, 202, 90]
 
 flipBotStart = [166, 203, 0]
 flipBotTask = [210, 115, 270]
 
 dealBotPlayer = [354, 133, 180]
 dealBotDealer = [139, 140, 360]
+
+clearDealer = [67, 135, 180]
+clearPlayer = [429, 135, 360]
 
 # initail configuration for cubes
 dealBot.configHorizontal(10)
@@ -128,7 +131,7 @@ def Move_DealBot(location, motorType: str = "03", maxSpeed: int = 80, movementTy
 def dealCard(numCubes: int, cubeArr, cubesTarget):
 	for i in range(numCubes):
 		cubes[cubeArr[i]].moveTo(cubesTarget[i])
-		sleep(.2)
+		sleep(1)
 
 	while True:
 		finish = True
@@ -148,7 +151,7 @@ def dealCard(numCubes: int, cubeArr, cubesTarget):
 			break
 
 def flipCard(cubeArr, cubesTarget):
-	cubes[cubeArr[0]].moveToMulti(2, cubesTarget[0], "01", 100, "00")
+	cubes[cubeArr[0]].moveToMulti(1, cubesTarget[0], "01", 100, "00")
 	cubes[cubeArr[1]].moveToMulti(2, [cubesTarget[1], cubesTarget[2]])
 
 	while True:
@@ -161,7 +164,10 @@ def flipCard(cubeArr, cubesTarget):
 				print("error cube", i)
 				cubes[cubeArr[i]].setMotor(-20, -20, 1)
 				sleep(1)
-				cubes[cubeArr[i]].moveToMulti(1, [cubesTarget[0][1]])
+				if i == 0:
+					cubes[cubeArr[i]].moveToMulti(1, [cubesTarget[0][0]], "00", 120, "00")
+				else:
+					cubes[cubeArr[i]].moveToMulti(1, [cubesTarget[0][0]])
 				finish = False
 
 
@@ -190,6 +196,7 @@ gamePlay = True
 
 # first draw
 Move_DrawBot(drawForward, "01", 100, "00")
+sleep(.5)
 
 while gamePlay:
 	# initialize player and dealer totals
@@ -216,6 +223,11 @@ while gamePlay:
 		# here start simultanious move of flipBot and drawBot
 		flipCard([0, 2], [drawForward, flipBotTask, flipBotStart])
 
+
+		# start movebot return and deal at same time
+		dealCard(2, [1, 3], [moveBotStart, dealBotPlayer if (i%2 == 0) else dealBotDealer])
+
+
 		#########################################################################
 		###    Get card value here from camera and add to respective total    ###
 		cardValue = int(input("Enter Card Value: "))
@@ -232,10 +244,6 @@ while gamePlay:
 			if cardValue == 11:
 				numAceDealer += 1
 			print(dealerTotal)
-
-
-		# start movebot return and deal at same time
-		dealCard(2, [1, 3], [moveBotStart, dealBotPlayer if (i%2 == 0) else dealBotDealer])
 
 
 	#########################################################################
@@ -263,6 +271,11 @@ while gamePlay:
 				# here start simultanious move of flipBot and drawBot
 				flipCard([0, 2], [drawForward, flipBotTask, flipBotStart])
 
+				
+				# start movebot return and deal at same time
+				dealCard(2, [1, 3], [moveBotStart, dealBotPlayer])
+
+
 				#########################################################################
 				###    Get card value here from camera and add to player total       ###
 				cardValue = int(input("Enter Card Value: "))
@@ -272,11 +285,10 @@ while gamePlay:
 				if playerTotal > 21 and numAcePlayer > 0:
 					playerTotal -= 10
 					numAcePlayer -= 1
+
+					
 				print(playerTotal)
 
-
-				# start movebot return and deal at same time
-				dealCard(2, [1, 3], [moveBotStart, dealBotPlayer])
 
 				############################################################
 				###   if player total > 21, bust and end game            ###
@@ -304,6 +316,10 @@ while gamePlay:
 			# here start simultanious move of flipBot and drawBot
 			flipCard([0, 2], [drawForward, flipBotTask, flipBotStart])
 
+			# start movebot return and deal at same time
+			dealCard(2, [1, 3], [moveBotStart, dealBotDealer])
+
+
 			#########################################################################
 			###    Get card value here from camera and add to dealer total        ###
 			###    if dealer busts, player win
@@ -312,14 +328,12 @@ while gamePlay:
 			if cardValue == 11:
 				numAceDealer += 1
 			if dealerTotal > 21 and numAceDealer > 0:
-				playerTotal -= 10
+				dealerTotal -= 10
 				numAceDealer -= 1
 			print(dealerTotal)
 
 			if dealerTotal > 21:
 				print("Dealer Busts")
-			# start movebot return and deal at same time
-			dealCard(2, [1, 3], [moveBotStart, dealBotDealer])
 
 			if blackjack:
 				break
@@ -333,12 +347,15 @@ while gamePlay:
 
 	if playerTotal > dealerTotal or dealerTotal > 21:
 		print("Player Wins")
+		dealBot.setSoundEffect(6)
 
 	elif dealerTotal > playerTotal:
 		print("Dealer Wins")
+		dealBot.setSoundEffect(5)
 
 	else:
 		print("It's a Tie")
+		dealBot.setSoundEffect(10)
 
 
 	###########################################################
@@ -351,6 +368,8 @@ while gamePlay:
 
 		if response[3] == 1:
 			# clear board with dealbot and reset game
+			Move_DealBot(clearPlayer)
+			Move_DealBot(clearDealer)
 			dealBot.motionReset()
 			break
 		if response[1] == 0:
