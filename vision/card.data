@@ -1,0 +1,5 @@
+classes = 52
+train = data/train.txt
+valid = data/test.txt
+names = data/card.names
+backup = /mydrive/yolov3/backup
