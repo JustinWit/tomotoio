@@ -170,3 +170,7 @@ class Cube:
         thetaHex = "{:02x}".format(theta)
         data = bytes.fromhex("05 00 " + thetaHex)
         self._write(UUIDs.CONFIG, data)
+
+    def getStandardID(self):
+        byte = self._read(UUIDs.TOIO_ID)
+        return byte.hex()[2:4]

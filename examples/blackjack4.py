@@ -11,7 +11,7 @@ CAMERA = 'Logitech C920x'  # name of the camera (and subsequently, the cv2 windo
 MIRROR = False  # mirror image or not?
 CLASSFILE = 'vision/card.names'  # file containing class names
 MODELCONFIG = 'vision/yolov3_cards.cfg'
-MODELWEIGHTS = 'vision/yolov3_cards_2900.weights'
+MODELWEIGHTS = 'vision/yolov3_custom_2900.weights'
 MODELSIZE = 416  # width and height of the model input, in pixels
 THOLD = 0.3  # confidence threshold
 NMS = 0.5  # threshold for non-maxima suppression
@@ -34,6 +34,11 @@ outputlayers = [layers[i[0]-1] for i in net.getUnconnectedOutLayers()]
 cam = cv2.VideoCapture(1, cv2.CAP_DSHOW)  # camera indexing starts at 0, but that is typically the integrated webcam
 cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+# cv2.namedWindow(CAMERA)
+# success, img = cam.read()
+# print(f'SUCCESS = {success}')
+# cv2.imshow(CAMERA, img)
+# cv2.waitKey(1)
 
 # Start of TOIO code
 cubes = createCubes()
@@ -86,9 +91,9 @@ def Move_DrawBot(locations, motorType: str = "03", maxSpeed: int = 80, movementT
 
 		# did not reach high enough on card
 		elif exitCode == 1:
-			drawBot.setMotor(-20, -20, .2)
+			drawBot.setMotor(-20, -20, 1)
+			sleep(1)
 			drawBot.moveToMulti(len(locations), locations, motorType, maxSpeed, movementType)
-			break
 
 		elif exitCode == 2:
 			drawBot.setMotor(-20, -20, .5)
@@ -262,7 +267,7 @@ while gamePlay:
 	dealBot.moveTo(dealBotDealer)
 	for i in range(3):
 
-		Move_DrawBot(drawBackward, "00", 60, "00")
+		Move_DrawBot(drawBackward, "00", 50, "00")
 		Move_MoveBot(moveBotTask, "03", 100)
 
 		# here start simultanious move of flipBot and drawBot
@@ -276,7 +281,11 @@ while gamePlay:
 		cardValue = -1
 		while cardValue == -1:
 			if DETECT:
-				_, img = cam.read()
+				success, img = cam.read()
+				if not success:
+					DETECT = False
+					cardValue = -1
+					continue
 				blob = cv2.dnn.blobFromImage(img, 1/255, (MODELSIZE, MODELSIZE), [0, 0, 0], 1, crop=True)
 				net.setInput(blob)
 				outputs = net.forward(outputlayers)
@@ -319,6 +328,8 @@ while gamePlay:
 		dealBot.motionReset()
 		while True:
 			response = dealBot.getMotion()
+			while len(response) < 3:
+				response = dealBot.getMotion()
 
 			# if tapped hit and recheck playerTotal
 			if response[3] == 1:
@@ -326,7 +337,7 @@ while gamePlay:
 				dealBot.setSoundEffect(1)
 
 				dealBot.moveTo(dealBotDealer)
-				Move_DrawBot(drawBackward, "00", 60, "00")
+				Move_DrawBot(drawBackward, "00", 50, "00")
 
 
 				Move_MoveBot(moveBotTask, "03", 100)
@@ -377,7 +388,7 @@ while gamePlay:
 	if bust == False:
 		while dealerTotal < 17:
 			dealBot.moveTo(dealBotPlayer)
-			Move_DrawBot(drawBackward, "00", 60, "00")
+			Move_DrawBot(drawBackward, "00", 50, "00")
 
 
 			Move_MoveBot(moveBotTask, "03", 100)

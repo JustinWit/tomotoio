@@ -7,7 +7,7 @@ from utils import createCubes, createNavigators, releaseCubes
 cubes = createCubes()
 navs = createNavigators(cubes)
 
-testCube1 = navs[1]
+testCube1 = navs[3]
 
 try:
 	while True:
