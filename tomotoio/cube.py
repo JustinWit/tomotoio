@@ -173,4 +173,4 @@ class Cube:
 
     def getStandardID(self):
         byte = self._read(UUIDs.TOIO_ID)
-        return byte.hex()[2:4]
+        return byte.hex()
