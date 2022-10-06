@@ -1,25 +1,15 @@
 # Description
 
-My test project playing with Sony Toio. See https://www.sony.net/SonyInfo/design/stories/toio/.
+Project files for the UIST Student Innovation Contest 2021
 
-This runs on Linux with Python 3.6 or later. I am personally running this on Raspberry Pi 4 + Stretch.
+Abstract:
+Games provide an interesting platform to test robot interaction capabilities for task automation. For our project, we will use toio robots to act as the dealer in blackjack. Implementation includes programming the robots and designing attachment mechanisms (e.g. Legos, 3D-printed parts) to accomplish required tasks such as drawing the top card off the deck, dealing cards to players, and flipping cards over when necessary. Robots will coordinate with each other and rely on user interaction via sound or gesture recognition (e.g. "hit", "stand"). Our goal is to create smooth and natural gameplay while highlighting the potential of toio robots.
 
-# Getting Started
+Preview Link: https://www.youtube.com/watch?v=85TVs3F-DmM&list=PLqhXYFYmZ-Vdt6Y1WSItsFrE4W7HGrPP7&index=8
 
-1. Install the package with `pip`. If you want to just try, `pip install -e .` at the root directory will be convenient.
-2. Power on your Toio cubes, and run `./scan-cubes.sh`. It will scan the cubes and create `toio-cubes.txt` that includes their MAC addresses. Note that the scanning requires the root privilege and you may be asked the `sudo` password.
-3. Run examples, e.g. `python examples/soccer.py`.
-  * Stay in the same directory as `toio-cubes.txt`.
-  * The Toio collection mat is required.
+This runs on Linux with Python 3.6 or later.
 
-# Examples (under examples directory)
+# Usage Notes
 
-* simple.py: Just connects to cubes, identifies themselves with sounds and lights, then disconnects
-* soundeffects.py: Beep the sound effects from #0 to #10
-* notifications.py: Outputs the notifications (positions, button states, motions) to the console.
-* rotate.py: Cube #1 rotates to the direction of cube #2
-* symmetric.py: Cube #1 moves to the point-symmetric position of cube #2
-* circle.py: Cube #1 moves circularly assuming cube #2 as the center
-* gravity.py: Cube #1 and #2 moves around the mat with a gravity (and repulsion if they are too close) between each other
-* soccer.py: Cube #1 plays soccer using cube #2 as the ball (https://youtu.be/YhW3jLB9C4E)
-* funmouse.py: Cube #1 works as a mouse, but be careful as it moves when you don't want! (https://youtu.be/EzOJ5VRSIUI)
+1. Power on your Toio cubes, and run `./scan-cubes.sh`. It will scan the cubes and create `toio-cubes.txt` that includes their MAC addresses. Note that the scanning requires the root privilege and you may be asked the `sudo` password.
+2. blackjack3.py was the working code file used during the conference.
